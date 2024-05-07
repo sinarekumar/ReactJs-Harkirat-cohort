@@ -1,2 +1,11 @@
-# ReactJs-Harkirat-cohort
-For the practice session here I'm creating the repository to make one project on that
+## Todo application
+
+This project contains a simple TODO application
+It has the following features : 
+
+-Anyone can ceate a todo
+-Anyone can see their existing todos
+-Anyone can mark a todo as done
+
+//initialize a node project
+//pit a package.json
