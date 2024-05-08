@@ -2,15 +2,23 @@ const express = require('express');
 const app = express();
 const { createTodo } = require('./types');
 const { todo } = require('./db');
-const port = 3000;
+const port = 27017;
 
 app.use(express.json());
 
-app.get('/todo', function (req, res) {
-    res.send("Hello World ")
-})
+app.get('/todos', async function (req, res) {
+    try {
+        const todos = await todo.find(); 
 
-app.post('/todo', async function (req, res) {
+        res.json(todos);
+    } catch (error) {
+        console.error("Error fetching todos:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+
+app.post('/todos', async function (req, res) {
     const createPayLoad = req.body;
     const parsePayLoad = createTodo.safeParse(createPayLoad);
     if (!parsePayLoad.success) {
@@ -23,7 +31,8 @@ app.post('/todo', async function (req, res) {
     // connect it with mongodb
     await todo.create({
         title: createPayLoad.title,
-        description: createPayLoad.description
+        description: createPayLoad.description,
+        completed: false
     })
 
     res.json({
@@ -31,7 +40,7 @@ app.post('/todo', async function (req, res) {
     })
 })
 
-app.put('/todo', async function (req, res) {
+app.put('/todos', async function (req, res) {
     const updatePayload = req.body;
     const parsePayLoad = createTodo.safeParse(updatePayload);
     if (!parsePayLoad.success) {
@@ -42,16 +51,15 @@ app.put('/todo', async function (req, res) {
     }
 
     // connect it with mongodb
-    await todo.create({
-        title: updatePayload.title,
-        description: updatePayload.description
+    await todo.update({
+        _id: req.body.id
+    }, {
+        completed: false
     })
 
     res.json({
-        msg: 'Todo created'
+        msg: 'Todo marked as completed'
     })
 })
 
-app.listen(port, () => {
-    console.log(`Example app listening on following port ${port}`);
-})
+app.listen(port)
